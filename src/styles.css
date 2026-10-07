@@ -6,6 +6,13 @@
 @media print{.sidebar,.topbar,.demo-banner,.event-actions,.back-link,.page-heading>.button,.toolbar,.pagination,footer,.staff-panel{display:none}.main-wrap{margin:0}main{padding:0}.table-scroll{overflow:visible}}
 .camera-view{height:auto;aspect-ratio:16/9}.camera-view video{display:block;object-fit:contain}.scan-frame{inset:16% 30%;box-shadow:none;border-color:#bbd7b380;pointer-events:none}.camera-guidance{margin:12px 0;line-height:1.7}
 .camera-guidance summary{cursor:pointer}.camera-guidance p{margin:8px 0 0}.camera-caption{position:absolute;bottom:12px;left:12px;right:12px;text-align:center;color:#fff;font-size:10px;text-shadow:0 1px 4px #000;background:#12281e99;padding:7px 10px;border-radius:6px;pointer-events:none}
+.manual-dropdown{border:1px solid var(--border);border-radius:7px;margin:12px 0;padding:0 12px;font-size:12px;color:#51634f}.manual-dropdown summary{cursor:pointer;padding:13px 0;min-height:44px}
+.camera-feedback{display:none;position:absolute;inset:0;z-index:1;padding:18px;background:#eff3ec;color:#435a3a;overflow-y:auto;overscroll-behavior:contain}
+.camera-feedback.visible{display:flex;flex-direction:column;gap:14px}
+.camera-feedback.checked_in{background:#e3f1e3;color:#317140}.camera-feedback.already_checked_in{background:#fbf1d9;color:#92732c}.camera-feedback.not_found,.camera-feedback.error{background:#f9e7e2;color:#a35b4e}
+.camera-feedback-content{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;min-height:0}
+.camera-feedback-content>svg{flex-shrink:0}.camera-feedback-content>strong{font-size:21px;line-height:1.3}.camera-guest-name{font-family:'Manrope',sans-serif;font-weight:800;font-size:26px;line-height:1.3;overflow-wrap:anywhere;max-width:100%}
+.camera-feedback-content small{font-size:11px}.camera-feedback-content p{font-size:12px;line-height:1.5;margin:0;overflow-wrap:anywhere}.camera-feedback .camera-next{margin-top:0;min-height:50px;flex-shrink:0;font-size:15px}
 @media(max-width:760px){
   .scanner-backdrop{padding:0;align-items:stretch;overflow:hidden}
   .scanner-modal{max-width:none;width:100%;height:100dvh;max-height:100dvh;border-radius:0;padding:calc(14px + env(safe-area-inset-top)) 16px calc(16px + env(safe-area-inset-bottom));overflow-y:auto;overscroll-behavior:contain}
