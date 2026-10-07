@@ -15,6 +15,8 @@ Open the URL printed by Vite (normally http://localhost:5173). With no Supabase 
 
 ## Connect Supabase
 
+For a short guide to test, check-in staff and organiser accounts, see [ACCOUNT_SETUP.md](ACCOUNT_SETUP.md).
+
 1. Create a Supabase project.
 2. Run `supabase/migrations/202610070001_initial.sql` in the project's SQL Editor. This creates tables, RLS policies, grants and transactional functions. Keep migrations in the repository for future schema changes.
 3. In Authentication settings, **disable “Allow new users to sign up”**. There is no public registration screen.
