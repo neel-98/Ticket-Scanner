@@ -18,7 +18,7 @@ Open the URL printed by Vite (normally http://localhost:5173). With no Supabase 
 For a short guide to test, check-in staff and organiser accounts, see [ACCOUNT_SETUP.md](ACCOUNT_SETUP.md).
 
 1. Create a Supabase project.
-2. Run `supabase/migrations/202610070001_initial.sql` in the project's SQL Editor. This creates tables, RLS policies, grants and transactional functions. Keep migrations in the repository for future schema changes.
+2. Run the SQL files in `supabase/migrations/` in filename order in the project's SQL Editor. They create tables, RLS policies, grants and transactional functions. For an existing installation, apply only migrations that have not been run yet, including `202610200001_event_management.sql` for creator-only event management.
 3. In Authentication settings, **disable “Allow new users to sign up”**. There is no public registration screen.
 4. In Authentication → Users, create staff email/password users. Auto-confirm the pre-provisioned accounts if they should sign in immediately.
 5. Provision the first organiser using the user ID from that dashboard:
@@ -53,7 +53,7 @@ The publishable key is public frontend configuration. Never use a secret/service
 - Generate tickets and QR codes beforehand using your existing workflow.
 - The file must contain **the literal text encoded in each QR**, not just QR images or formulas.
 - CSV and `.xlsx` supported; first row is headings. For Excel, choose a worksheet.
-- Map ticket code and full name, or ticket code plus first/last names. Email is optional. Unmapped columns, including QR formulas/images, are ignored.
+- Map ticket code and full name, or ticket code plus first/last names. Email is optional: files with only name and ticket columns work. Select **Skip — don’t import emails** in the email mapping to exclude addresses even when the file includes them; the saved email values will be null. Unmapped columns, including QR formulas/images, are ignored.
 - Codes are case-sensitive strings scoped to an event. `AbC`, `abc`, and `00123` are different values. Ticket codes may repeat across different events.
 - Surrounding whitespace is an error. Correct it in the source file rather than silently changing payloads.
 - Excel numeric ticket cells trigger a warning: zeros already lost in Excel cannot be recovered. Format ticket columns as **Text** before entering/importing codes.
@@ -72,6 +72,16 @@ The publishable key is public frontend configuration. Never use a secret/service
 On network failure, **Retry same request** confirms the original saved outcome if the response was lost. No offline writes are queued. Closing a scanner stops camera tracks. Permission failures and missing cameras show manual-entry guidance.
 
 Guest-list **Check in** uses the same transactional operation. Organisers can enter a past observed admission time in the **event timezone**, preserving both admission and audit-entry time. Daylight-saving gaps/ambiguous wall times are rejected. Existing admissions are never overwritten. Organiser-only undo is confirmed, version-checked, retry-safe and audited. Archived events are read-only.
+
+## Archive, unarchive, or delete an event
+
+The event creator can manage their event from its detail page:
+
+- **Archive event** makes it read-only and keeps its guests and check-in history.
+- Open it from the dashboard’s **Archived** tab and choose **Unarchive event** to enable check-ins and staff assignment changes again.
+- **Delete event** asks for confirmation before permanently removing the event, guests, staff assignments, check-in history, and associated request-cache data. Both active and archived events can be deleted. Deletion cannot be undone.
+
+These controls require an active organiser account belonging to the creator. Ownership is checked by the database as well as the interface.
 
 ## Reports and outage backup
 
@@ -118,7 +128,10 @@ Phone camera → QR payload → Check-in RPC → Confirmed result
 npm run typecheck
 npm run lint
 npm run build
+node --experimental-strip-types --test tests/parsing.test.ts
 ```
+
+Run `tests/event-management.sql` with `psql -v ON_ERROR_STOP=1 -f tests/event-management.sql` as the database owner against a disposable Supabase database with all migrations applied. It checks optional-email imports, creator-only permissions, archive/unarchive behavior, and complete event deletion; its fixtures are rolled back.
 
 On the deployed site, verify login, imports, repeat and unknown tickets, undo, manual reconciliation and exports. Scan the same unused ticket from two devices simultaneously: exactly one admission should succeed. Verify assigned-event access and organiser-only controls with a check-in staff account. Test real phone camera scanning of both printed QR codes and codes displayed on another phone.
 

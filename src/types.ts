@@ -2,7 +2,7 @@ export type Role = 'organiser' | 'checkin';
 export interface Profile { user_id: string; role: Role; active: boolean }
 export interface EventRecord {
   id: string; name: string; event_date: string; timezone: string; venue: string | null;
-  archived_at: string | null; created_at: string; attendee_count: number; checked_in_count: number;
+  archived_at: string | null; created_by: string; created_at: string; attendee_count: number; checked_in_count: number;
 }
 export interface Attendee {
   id: string; event_id: string; ticket_code: string; name: string; email: string | null;
