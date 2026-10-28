@@ -7,8 +7,8 @@ test('imports a CSV containing only names and ticket codes', () => {
   const result = validateSheet(sheet, suggestMapping(sheet.headers));
   assert.deepEqual(result.errors, []);
   assert.deepEqual(result.attendees, [
-    { name: 'Alex Morgan', ticket_code: '00123', email: null },
-    { name: 'Maya Patel', ticket_code: 'AbC', email: null },
+    { name: 'Alex M.', ticket_code: '00123', email: null },
+    { name: 'Maya P.', ticket_code: 'AbC', email: null },
   ]);
 });
 
@@ -27,12 +27,15 @@ test('skipped Excel email formulas do not block a name and ticket import', () =>
   };
   const result = validateSheet(sheet, { ...suggestMapping(sheet.headers), email: -1 });
   assert.deepEqual(result.errors, []);
-  assert.deepEqual(result.attendees, [{ name: 'Alex Morgan', ticket_code: '00123', email: null }]);
+  assert.deepEqual(result.attendees, [{ name: 'Alex M.', ticket_code: '00123', email: null }]);
 });
 
-test('mapped emails remain optional per attendee and are imported when present', () => {
+test('emails are skipped by default and imported only when explicitly mapped', () => {
   const sheet = parseCsv('Name,Ticket,Email\nAlex Morgan,00123, alex@example.com \nMaya Patel,AbC,');
-  const result = validateSheet(sheet, suggestMapping(sheet.headers));
-  assert.deepEqual(result.errors, []);
-  assert.deepEqual(result.attendees.map(a => a.email), ['alex@example.com', null]);
+  const skipped = validateSheet(sheet, suggestMapping(sheet.headers));
+  assert.deepEqual(skipped.errors, []);
+  assert.deepEqual(skipped.attendees.map(a => a.email), [null, null]);
+  const mapped = validateSheet(sheet, { ...suggestMapping(sheet.headers), email: 2 });
+  assert.deepEqual(mapped.errors, []);
+  assert.deepEqual(mapped.attendees.map(a => a.email), ['alex@example.com', null]);
 });

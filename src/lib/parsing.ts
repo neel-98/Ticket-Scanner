@@ -47,8 +47,14 @@ export function suggestMapping(headers: string[]): Mapping {
     ticket: find(['ticketcode', 'ticketid', 'qrpayload', 'qrcode', 'code', 'ticket']),
     name: find(['fullname', 'name', 'attendeename', 'guestname']),
     first: find(['firstname', 'first', 'givenname']), last: find(['lastname', 'last', 'surname']),
-    email: find(['email', 'emailaddress']),
+    email: -1,
   };
+}
+function shortenName(full: string): string {
+  const parts = full.split(/\s+/).filter(Boolean);
+  if (parts.length < 2) return full;
+  const initial = parts[parts.length - 1][0].toUpperCase();
+  return `${parts[0]} ${initial}.`;
 }
 export function validateSheet(sheet: Sheet, mapping: Mapping): Validation {
   const result: Validation = { attendees: [], errors: [], warnings: [], skipped: 0 };
@@ -62,8 +68,9 @@ export function validateSheet(sheet: Sheet, mapping: Mapping): Validation {
     if (row.cells.every(c => !c.text && !c.formula && !c.unsupported)) { result.skipped++; continue; }
     const cell = (i: number): Value => row.cells[i] ?? { text: '' };
     const code = cell(mapping.ticket);
-    const nameCells = mapping.name >= 0 ? [cell(mapping.name)] : [cell(mapping.first), cell(mapping.last)];
-    const name = nameCells.map(c => c.text.trim()).filter(Boolean).join(' ');
+    const name = mapping.name >= 0
+      ? shortenName(cell(mapping.name).text.trim())
+      : [cell(mapping.first).text.trim(), (cell(mapping.last).text.trim()[0] ? cell(mapping.last).text.trim()[0].toUpperCase() + '.' : '')].filter(Boolean).join(' ');
     const email = mapping.email >= 0 ? cell(mapping.email) : { text: '' };
     const prefix = `Row ${row.number}: `;
     if (selected.some(i => cell(i).formula || cell(i).unsupported)) result.errors.push(prefix + 'Mapped fields must be literal text values, not formulas or unsupported data.');
