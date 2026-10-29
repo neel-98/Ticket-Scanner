@@ -83,6 +83,17 @@ The event creator can manage their event from its detail page:
 
 These controls require an active organiser account belonging to the creator. Ownership is checked by the database as well as the interface.
 
+## Download QR tickets for Microsoft 365 email
+
+On the event page, organisers can select **Download QR tickets (ZIP)**. This exports all imported guests, regardless of the current guest-list filter, with one 512px PNG per ticket. Each QR encodes the exact stored ticket code and is generated in the browser, without an external QR service. The ZIP contains no attendee names or email addresses.
+
+1. Extract the ZIP and upload its event-named folder to the root of your work OneDrive. Folder names use a filename-safe version of the event name plus `-qr-tickets`, for example **Community-Gala-2026-qr-tickets**. The ZIP filename, manifest paths, and included instructions use the same folder name.
+2. Use the included `ticket-files.csv` to add a **QRFilePath** column to your original recipient workbook, matching **Conditional Ticket**. Import codes as Text to preserve leading zeros. Normal filenames match the code; unsupported filename characters and collisions are handled using the manifest paths.
+3. In Power Automate, use **List rows present in a table → Apply to each → Get file content using path → Send an email (V2)**. Set File Path to the current row's **QRFilePath**, and attachment content to **File content** from OneDrive.
+4. Remove **HTTP** and **Upload file from URL** from the flow. Test a small recipient table before using the full list, and track sent rows in your workbook to avoid resending them on later runs.
+
+Recipient addresses can remain in your Microsoft 365 workbook when email is skipped in the scanner import. Generating tickets does not change check-in status. The generated images may look different from your Excel QR images but encode the same literal code.
+
 ## Reports and outage backup
 
 Organisers can export attendance CSV and print an alphabetical paper list. CSV cells are escaped and spreadsheet formula prefixes are neutralised. When opening CSV in Excel, import the ticket-code column as **Text** to retain leading zeros. Exported times include the event timezone.
